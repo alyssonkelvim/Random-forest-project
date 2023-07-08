@@ -1,11 +1,16 @@
-package project.src.java.dotTreeParser.treeStructure;
+package com.mycompany.randomforest.model;
 
+import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Objects;
+import java.util.Set;
 
-import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
-import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
-import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
+import com.mycompany.randomforest.model.Nodes.InnerNode;
+import com.mycompany.randomforest.model.Nodes.Node;
+import com.mycompany.randomforest.model.Nodes.OuterNode;
+
+
 
 public class Tree {
 
@@ -55,7 +60,7 @@ public class Tree {
     }
 
     public int getClassQuantity() {
-        return outerNodes.size();
+        return outerNodes.values().stream().findFirst().get().getValues().size();
     }
   
 }
