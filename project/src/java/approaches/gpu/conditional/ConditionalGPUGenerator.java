@@ -1,26 +1,30 @@
-package project.src.java.approaches.gpu;
+package com.mycompany.randomforest.gpuGenerator.conditional;
 
+import com.mycompany.randomforest.model.Comparisson;
+import com.mycompany.randomforest.model.Nodes.InnerNode;
+import com.mycompany.randomforest.model.Nodes.Node;
+import com.mycompany.randomforest.model.Nodes.OuterNode;
+import com.mycompany.randomforest.model.Tree;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-import project.src.java.dotTreeParser.Parser;
-import project.src.java.dotTreeParser.treeStructure.Comparisson;
-import project.src.java.dotTreeParser.treeStructure.Tree;
-import project.src.java.dotTreeParser.treeStructure.Nodes.*;
-import project.src.java.util.FileBuilder;
 
 
+import com.mycompany.randomforest.parser.Parser;
+import com.mycompany.randomforest.util.FileBuilder;
 
 public class ConditionalGPUGenerator {
     public static void execute(List<Tree> trees) {
+    	System.out.println("Generating code...");
         String sourceCode = new String();
 
         sourceCode += generateFunctionSignature(Parser.featuresNames.size());
         sourceCode += generateClassInitialization(Parser.classesNames.size());
         sourceCode += generateIfTrees(trees);
         
+        System.out.println("Writing File...");
         FileBuilder.execute(sourceCode, "gpu/conditional/rf_with_if.cu");
     }
 
@@ -30,7 +34,7 @@ public class ConditionalGPUGenerator {
             .map(ts -> generateIfTree(ts.getRoot(), 2))
             .collect(Collectors.joining("\n"));
         code += generateComparissons(trees.get(0).getClassQuantity());
-        code += "\t}\n}";
+        code += "\n\t}\n}";
         return code;
     }
 
@@ -57,7 +61,7 @@ public class ConditionalGPUGenerator {
     }
 
     private static String decodeToIf(Comparisson comparisson) {
-        return "F[" + comparisson.getColumn() + "] " 
+        return "F" + comparisson.getColumn() + "[i]" 
             + comparisson.getComparissonType() + " " 
             + comparisson.getThreshold();
     }
