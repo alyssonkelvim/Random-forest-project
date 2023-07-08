@@ -1,11 +1,12 @@
-package com.mycompany.randomforest.gpuGenerator.conditional;
+package project.src.java.approaches.gpu.conditional;
+
+import project.src.java.dotTreeParser.treeStructure.Tree;
+import project.src.java.util.FileBuilder;
 
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.mycompany.randomforest.model.Tree;
-import com.mycompany.randomforest.util.FileBuilder;
 
 public class TestFileGenerator {
     public static void execute(List<Tree> trees, int featureQuantity, String dataset, int samplesQuantity){

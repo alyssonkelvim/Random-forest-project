@@ -1,18 +1,18 @@
-package com.mycompany.randomforest.cpuGenerator.conditional;
+package project.src.java.approaches.cpu.conditional;
+
+import project.src.java.dotTreeParser.Parser;
+import project.src.java.dotTreeParser.treeStructure.Comparisson;
+import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
+import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
+import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
+import project.src.java.dotTreeParser.treeStructure.Tree;
+import project.src.java.util.FileBuilder;
 
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
-
-import com.mycompany.randomforest.model.Comparisson;
-import com.mycompany.randomforest.model.Tree;
-import com.mycompany.randomforest.model.Nodes.InnerNode;
-import com.mycompany.randomforest.model.Nodes.Node;
-import com.mycompany.randomforest.model.Nodes.OuterNode;
-import com.mycompany.randomforest.parser.Parser;
-import com.mycompany.randomforest.util.FileBuilder;
 
 public class ConditionalCPUGenerator {
 

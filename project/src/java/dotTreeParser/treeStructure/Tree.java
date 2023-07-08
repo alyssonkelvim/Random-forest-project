@@ -1,15 +1,11 @@
-package com.mycompany.randomforest.model;
+package project.src.java.dotTreeParser.treeStructure;
 
-import java.util.Collection;
+import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
+import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
+import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
+
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Objects;
-import java.util.Set;
-
-import com.mycompany.randomforest.model.Nodes.InnerNode;
-import com.mycompany.randomforest.model.Nodes.Node;
-import com.mycompany.randomforest.model.Nodes.OuterNode;
-
 
 
 public class Tree {

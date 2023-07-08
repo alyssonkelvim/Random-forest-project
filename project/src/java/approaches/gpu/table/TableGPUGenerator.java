@@ -1,4 +1,11 @@
-package com.mycompany.randomforest.gpuGenerator.table;
+package project.src.java.approaches.gpu.table;
+
+import project.src.java.dotTreeParser.Parser;
+import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
+import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
+import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
+import project.src.java.dotTreeParser.treeStructure.Tree;
+import project.src.java.util.FileBuilder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -7,12 +14,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
-import com.mycompany.randomforest.model.Tree;
-import com.mycompany.randomforest.model.Nodes.InnerNode;
-import com.mycompany.randomforest.model.Nodes.Node;
-import com.mycompany.randomforest.model.Nodes.OuterNode;
-import com.mycompany.randomforest.parser.Parser;
-import com.mycompany.randomforest.util.FileBuilder;
+
 
 public class TableGPUGenerator {
 	public static void execute(List<Tree> trees, String dataset) {

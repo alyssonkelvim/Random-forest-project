@@ -1,19 +1,11 @@
-package com.mycompany.randomforest.parser;
+package project.src.java.dotTreeParser.treeStructure;
+
+import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
+import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Scanner;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
-
-import com.mycompany.randomforest.model.Comparisson;
-import com.mycompany.randomforest.model.Tree;
-import com.mycompany.randomforest.model.Nodes.InnerNode;
-import com.mycompany.randomforest.model.Nodes.OuterNode;
-
 
 
 public class TreeBuilder {

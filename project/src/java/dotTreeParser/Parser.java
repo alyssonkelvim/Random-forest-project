@@ -1,6 +1,8 @@
-package com.mycompany.randomforest.parser;
+package project.src.java.dotTreeParser;
 
-import com.mycompany.randomforest.model.Tree;
+import project.src.java.dotTreeParser.treeStructure.Tree;
+import project.src.java.dotTreeParser.treeStructure.TreeBuilder;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -10,8 +12,6 @@ import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-
 
 public class Parser {
 
@@ -27,7 +27,7 @@ public class Parser {
     }
 
     private static void readDatasetHeader(String dataset) throws IOException {
-        var path = System.getProperty("user.dir") + "/assets/datasets/" + dataset + ".csv";
+        var path = System.getProperty("user.dir") + "/project/assets/datasets/" + dataset + ".csv";
         var scanner = new Scanner(new File(path));
         var line = scanner.nextLine().split(",");
         featuresNames = Arrays.asList(line);
@@ -67,4 +67,12 @@ public class Parser {
           .collect(Collectors.toSet());
     }
 
+    public static int getClassQuantity(){
+        return classesNames.size();
+    }
+
+    public static int getFeatureQuantity(){
+        /* the number of feature also count the class column, subtracting 1 to return the correct value */
+        return featuresNames.size() - 1;
+    }
 }
