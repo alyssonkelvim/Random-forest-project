@@ -1,15 +1,20 @@
-package project.src.java.dotTreeParser.treeStructure;
+package com.mycompany.randomforest.parser;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Scanner;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
-import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
+import com.mycompany.randomforest.model.Comparisson;
+import com.mycompany.randomforest.model.Tree;
+import com.mycompany.randomforest.model.Nodes.InnerNode;
+import com.mycompany.randomforest.model.Nodes.OuterNode;
+
+
 
 public class TreeBuilder {
 
@@ -64,6 +69,8 @@ public class TreeBuilder {
         var end = line.indexOf(CLOSED_BRACKET_STRING) - CLOSED_BRACKET_OFFSET;
         final var values = (ArrayList<Integer>)Arrays
             .asList(line.substring(begin, end)
+            .replaceAll("\\\\n", ",")
+            .replaceAll("\\n", ",")
             .replaceAll("\\[", "")
             .replaceAll("]", "")
             .replaceAll(";", "")
@@ -76,11 +83,7 @@ public class TreeBuilder {
         
         node.setValues(values);
         node.setClassNumber(values
-            .indexOf(values
-                .stream()
-                .filter(value-> value != 0)
-                .findFirst()
-                .get()));
+            .indexOf(Collections.max(values)));
         node.setClassName(classesNames.get(node.getClassNumber()));
         tree.newOuterNode(node);
     }
@@ -99,15 +102,18 @@ public class TreeBuilder {
         var begin = line.indexOf(NVALUE_STRING);
         var end = line.length() - 1;
         
+        var test = line.substring(begin, end)
+        		.replaceAll("\\\\n", ",")
+                .replaceAll("\\n", ",")
+                .replaceAll("\\[", "")
+                .replaceAll("]", "")
+                .replaceAll(";", "")
+                .replaceAll(" ", "")
+                .replaceAll("\"", "")
+                .replaceAll("nvalue=", "")
+                .split(",");
         final var values = (ArrayList<Integer>)Arrays
-            .asList(line.substring(begin, end)
-            .replaceAll("\\[", "")
-            .replaceAll("]", "")
-            .replaceAll(";", "")
-            .replaceAll(" ", "")
-            .replaceAll("\"", "")
-            .replaceAll("nvalue=", "")
-            .split(","))
+            .asList(test)
             .stream()
             .map(Integer::parseInt)
             .collect(Collectors.toList());
@@ -122,9 +128,7 @@ public class TreeBuilder {
         var begin = line.indexOf(LABEL_EQUAL_STRING) + LABEL_BEGIN_OFFSET;
         var end = line.indexOf(INNER_NODE_INDICATOR_STRING) - NGINI_END_OFFSET;
         var comparissonParts = line.substring(begin, end).split(" ");
-
-        /* o problema ta aqui*/
-
+        
         comparisson.setColumn(
             Integer.parseInt(comparissonParts[0]
             .replace("[", "")
