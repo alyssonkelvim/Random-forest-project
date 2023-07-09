@@ -1,5 +1,5 @@
 #$datasets = @("Iris", "SUSY", "Adult", "Covtype")
-$datasets = @("Iris", "Adult")
+$datasets = @("Iris", "SUSY")
 #$trees = @(2,5,10)
 $trees = @(10)
 $depth = @(10)

@@ -77,7 +77,7 @@ public class ConditionalCPUGenerator {
 				+ "     // Obter o tempo final\r\n"
 				+ "    clock_t end_time = clock();\r\n"
 				+ "    // Calcular o tempo decorrido em segundos\r\n"
-				+ "    elapsed_time = ((float)(end_time - start_time)*1000.0) / ((float)CLOCKS_PER_SEC);\r\n"
+				+ "    elapsed_time = ((float)(end_time - start_time)) / ((float)(CLOCKS_PER_SEC/1000.0));\r\n"
 				+ "    registerTime(elapsed_time);\r\n"
 				+ "\r\n"
 				+ "    writeOutFile(h_P, nElem);\r\n"
