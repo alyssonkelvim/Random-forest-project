@@ -9,7 +9,7 @@ public class FileBuilder {
 
     public static void execute(String content, String filePath){
         try {
-            var path = System.getProperty("user.dir") + "/project/target/" + filePath;
+            var path = System.getProperty("user.dir") + "/generated/" + filePath;
             var fileWriter = new FileWriter(path);
             BufferedWriter out = new BufferedWriter(fileWriter);
             out.write(content);
@@ -22,7 +22,7 @@ public class FileBuilder {
     }
     public static boolean createDir(String path){
 
-        var folderPath = System.getProperty("user.dir") + "/project/target/" + path;
+        var folderPath = System.getProperty("user.dir") + "/generated/" + path;
         File folder = new File(folderPath);
         return folder.mkdir();
 

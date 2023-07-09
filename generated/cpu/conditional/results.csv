@@ -1,0 +1,3 @@
+﻿Dataset,Trees,Depth,Time,Accuracy
+Iris,10,10,0.00,0.9602649006622517
+Adult,10,10,3.00,0.8623548922056384

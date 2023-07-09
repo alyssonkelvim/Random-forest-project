@@ -1,3 +1,5 @@
 .idea
 out
 Random-forest-acelerator.iml
+/target/
+/assets/
