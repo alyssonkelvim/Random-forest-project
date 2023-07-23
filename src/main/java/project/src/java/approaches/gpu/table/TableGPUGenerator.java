@@ -372,7 +372,7 @@ public class TableGPUGenerator {
         "    CHECK(cudaEventCreate( & start));\n" +
         "    CHECK(cudaEventCreate( & stop));\n" +
         "    cudaDeviceSynchronize();\n" +
-        "    writeOutFile(h_P, nElem);\n" +
+        "    //writeOutFile(h_P, nElem);\n" +
         "\n" +
         "    CHECK(cudaGetLastError());\n" +
         "\n" +

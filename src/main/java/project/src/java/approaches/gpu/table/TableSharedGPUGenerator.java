@@ -381,7 +381,7 @@ public class TableSharedGPUGenerator {
         "\n" +
         "    registerTime(elapsed_time);\n" +
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
-        "    writeOutFile(h_P, nElem);\n" +
+        "    //writeOutFile(h_P, nElem);\n" +
         "\n" +
         "    CHECK(cudaGetLastError());\n" +
         "\n" +

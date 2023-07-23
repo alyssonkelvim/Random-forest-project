@@ -64,6 +64,7 @@ public class TestFileGenerator {
         "    // record start event\n" +
         "    CHECK(cudaEventRecord(start, 0));\n" +
         "    RF_with_IF << < grid, block >>> (%_VARIABLES_%, d_P, nElem);\n" +
+        "    cudaDeviceSynchronize();\n" +
         "    CHECK(cudaEventRecord(stop, 0));\n" +
         "    CHECK(cudaEventSynchronize(stop));\n" +
         "    // calculate elapsed time\n" +
@@ -74,9 +75,8 @@ public class TestFileGenerator {
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
         "    CHECK(cudaEventCreate( & start));\n" +
         "    CHECK(cudaEventCreate( & stop));\n" +
-        "    cudaDeviceSynchronize();\n" +
         "    for(int i = 0; i < nElem; i++){\n" +
-        "        writeOutFile(h_P[i]);\n" +
+        "        //writeOutFile(h_P[i]);\n" +
         "    }\n" +
         "\n" +
         "    CHECK(cudaGetLastError());\n" +
