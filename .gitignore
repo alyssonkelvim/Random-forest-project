@@ -1,9 +1,8 @@
-.idea
 out
-Random-forest-acelerator.iml
-/target/
-!/target/RandomForest-1.0.jar
-/assets/
-!/assets/datasets/Iris.csv
-/tools/
-/jdk-20.0.2/
+assets/trees
+tools/
+jdk-20.0.2/
+target/classes
+target/generated-sources
+target/maven-archiver
+target/maven-status
