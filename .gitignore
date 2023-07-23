@@ -3,4 +3,6 @@ out
 Random-forest-acelerator.iml
 /target/
 /assets/
+!/assets/datasets/Iris.csv
 /tools/
+/jdk-20.0.2/

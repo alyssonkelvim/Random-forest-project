@@ -18,13 +18,15 @@ import java.util.stream.IntStream;
 
 
 public class ConditionalGPUGenerator {
-    public static void execute(List<Tree> trees) {
+    public static void execute(List<Tree> trees, String dataset) {
     	System.out.println("Generating code...");
         String sourceCode = new String();
 
+        sourceCode += TestFileGenerator.generateFunctions(dataset);
         sourceCode += generateFunctionSignature(Parser.featuresNames.size());
         sourceCode += generateClassInitialization(Parser.classesNames.size());
         sourceCode += generateIfTrees(trees);
+        sourceCode += TestFileGenerator.generateMainFunction(Parser.featuresNames.size(), Parser.samplesQuantity);
         
         System.out.println("Writing File...");
         FileBuilder.execute(sourceCode, "gpu/conditional/rf_with_if.cu");

@@ -1,0 +1,35 @@
+Dataset,Trees,Depth,Accuracy Scikit,GPU,Time,Comparissons,Approach
+
+,GeForce GTX 1050 Ti,Conditional GPU
+,GeForce GTX 1050 Ti,Table GPU with local memory
+
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,2.61,Conditional GPU
+
+
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,Conditional GPU
+
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,Conditional GPU
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,Table GPU with local memory
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,Table GPU with constant memory
+
+
+
+
+
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,Conditional GPU
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,Table GPU with local memory
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,Table GPU with constant memory
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,Table GPU with shared memory
+,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,77.54,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,2.61,GeForce GTX 1050 Ti,Table GPU with restrict memory
+
+,GeForce GTX 1050 Ti,Conditional GPU
+,GeForce GTX 1050 Ti,Table GPU with local memory
+,GeForce GTX 1050 Ti,Table GPU with constant memory
+,GeForce GTX 1050 Ti,Table GPU with shared memory
+,GeForce GTX 1050 Ti,Table GPU with restrict memory
+
+
+,GeForce GTX 1050 TiSUSY,2,2,0.7194546666666667,GeForce GTX 1050 Ti,1.46,Conditional GPU
+
+,GeForce GTX 1050 TiSUSY,2,2,0.7194546666666667,GeForce GTX 1050 TiSUSY,2,2,0.7253793333333334,GeForce GTX 1050 Ti,1.26,19999996,Conditional GPU
+,GeForce GTX 1050 TiSUSY,2,2,0.7194546666666667,GeForce GTX 1050 TiSUSY,2,2,0.7253793333333334,GeForce GTX 1050 Ti

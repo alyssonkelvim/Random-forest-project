@@ -27,7 +27,7 @@ public class Parser {
     }
 
     private static void readDatasetHeader(String dataset) throws IOException {
-        var path = System.getProperty("user.dir") + "\\assets\\datasets\\" + dataset + ".csv";
+        var path = System.getProperty("user.dir") + "/assets/datasets/" + dataset + ".csv";
         var scanner = new Scanner(new File(path));
         var line = scanner.nextLine().split(",");
         featuresNames = Arrays.asList(line);

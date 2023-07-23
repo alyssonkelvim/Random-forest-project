@@ -13,9 +13,7 @@ trees_quantity = int(sys.argv[2])
 max_depth = int(sys.argv[3])
 dataset = pd.read_csv("assets/datasets/" + dataset_name + ".csv")
 print(logName + "Starting Training of "+ dataset_name + " with " + str(trees_quantity) + " trees and "+ str(max_depth) + " of depth")
-resultsFile = open(sys.argv[4], 'a')
-resultsFile.write(dataset_name + "," + str(trees_quantity) + ","+ str(max_depth) + "")
-resultsFile.close()
+
 
 def remove_id(dataset):
     dataset = dataset.rename(columns=lambda name: name.lower())
@@ -72,3 +70,8 @@ for t in clf.estimators_:
     fileTree.close()
     #print(logName+ f"Generating Decision Tree {i}")
     i += 1
+
+content = dataset_name + "," + str(trees_quantity) + ","+ str(max_depth) + "," + str(metrics.accuracy_score(Y_test, y_pred))
+with open(sys.argv[4], 'ab') as resultsFile:
+    resultsFile.write(content.encode())
+resultsFile.close()

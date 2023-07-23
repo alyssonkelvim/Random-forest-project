@@ -27,7 +27,7 @@ public class TableGPUGenerator {
         sourceCode += generateMainFunction(Parser.featuresNames.size(), Parser.samplesQuantity);
         
         System.out.println("Writing File...");
-        FileBuilder.execute(sourceCode, "gpu/table/rf_with_table.cu");
+        FileBuilder.execute(sourceCode, "gpu/table/local/rf_with_table.cu");
     }
 	
 	private static String generateMasksandIncludes() {
@@ -71,7 +71,7 @@ public class TableGPUGenerator {
 	private static String generateAuxiliarFunctions(String dataset) {
 		return "\r\n"
 				+ "void readInFile(float **ip) {\r\n"
-				+ "    FILE *file = fopen(\"../../../assets/datasets/"+dataset+".csv\",\"r\");\r\n"
+				+ "    FILE *file = fopen(\"assets/datasets/"+dataset+".csv\",\"r\");\r\n"
 				+ "    if (file == NULL) {\r\n"
 				+ "        printf(\"Failed to open the file.\\n\");\r\n"
 				+ "        exit(1);\r\n"
@@ -80,6 +80,7 @@ public class TableGPUGenerator {
 				+ "    char line[MAX_LINE_LENGTH];\r\n"
 				+ "    \r\n"
 				+ "    int row = 0;\r\n"
+				+ "    fgets(line, sizeof(line), file);\r\n"
 				+ "    while (fgets(line, sizeof(line), file)) {\r\n"
 				+ "        char *token = strtok(line, \",\");\r\n"
 				+ "        \r\n"
@@ -113,7 +114,7 @@ public class TableGPUGenerator {
 				+ "}\r\n"
 				+ "\r\n"
 				+ "void registerTime(float value) {\r\n"
-				+ "    FILE *file = fopen(\"results.csv\", \"a\"); // Abre o arquivo no modo de \"acrescentar\" (append)\r\n"
+				+ "    FILE *file = fopen(\"results/results.csv\", \"a\"); // Abre o arquivo no modo de \"acrescentar\" (append)\r\n"
 				+ "    if (file == NULL) {\r\n"
 				+ "        printf(\"Falha ao abrir o arquivo results.csv.\\n\");\r\n"
 				+ "        return;\r\n"
@@ -130,7 +131,7 @@ public class TableGPUGenerator {
 	            .mapToObj( i -> "float *F"+i)
 	            .collect(Collectors.joining(", "));
 	    String code = "__global__ void RF_with_table("+features+", int *P, const int N){\n";
-
+	    code += "\n    int i = blockIdx.x * blockDim.x + threadIdx.x;\n";
 		code += "    float* h["+featuresQuantity+"] = { ";
 		code += IntStream.range(0, featuresQuantity)
 				.mapToObj(t -> "F"+t)
@@ -364,24 +365,14 @@ public class TableGPUGenerator {
         "    CHECK(cudaEventSynchronize(stop));\n" +
         "    // calculate elapsed time\n" +
         "    CHECK(cudaEventElapsedTime( & elapsed_time, start, stop));\n" +
-        "    printf(\"RF with IF - execution time = %.6fms\\n\", elapsed_time);\n" +
+        "    printf(\"RF with Table (local memory) - execution time = %.6fms\\n\", elapsed_time);\n" +
         "\n" +
         "    registerTime(elapsed_time);\n" +
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
         "    CHECK(cudaEventCreate( & start));\n" +
         "    CHECK(cudaEventCreate( & stop));\n" +
         "    cudaDeviceSynchronize();\n" +
-        "    for(int i = 0; i < nElem; i++){\n" +
-        "        writeOutFile(h_P[i]);\n" +
-        "    }\n" +
-        "    // record start event\n" +
-        "    CHECK(cudaEventRecord(start, 0));\n" +
-     //   "    RF_with_EQ << < grid, block >>> (%_VARIABLES_%, d_P, nElem);\n" +
-        "    CHECK(cudaEventRecord(stop, 0));\n" +
-        "    CHECK(cudaEventSynchronize(stop));\n" +
-        "    // calculate elapsed time\n" +
-        "    CHECK(cudaEventElapsedTime( & elapsed_time, start, stop));\n" +
-        "    printf(\"RF with EQ - execution time = %.6fms\\n\", elapsed_time);\n" +
+        "    writeOutFile(h_P, nElem);\n" +
         "\n" +
         "    CHECK(cudaGetLastError());\n" +
         "\n" +

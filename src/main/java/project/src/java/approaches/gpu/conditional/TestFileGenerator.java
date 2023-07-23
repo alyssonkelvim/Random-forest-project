@@ -1,5 +1,6 @@
 package project.src.java.approaches.gpu.conditional;
 
+import project.src.java.dotTreeParser.Parser;
 import project.src.java.dotTreeParser.treeStructure.Tree;
 import project.src.java.util.FileBuilder;
 
@@ -14,7 +15,7 @@ public class TestFileGenerator {
         FileBuilder.execute(generateMainFunction(featureQuantity, samplesQuantity), "gpu/conditional/main.cu");
     }
 
-    private static String generateMainFunction(int featureQuantity, int samplesQuantity) {
+    public static String generateMainFunction(int featureQuantity, int samplesQuantity) {
         String code =  "int main(int argc, char ** argv) {\n" +
         "     \n" +
         "    float elapsed_time;\n" +
@@ -22,12 +23,12 @@ public class TestFileGenerator {
         "    int dev = 0;\n" +
         "    cudaDeviceProp deviceProp;\n" +
         "    CHECK(cudaGetDeviceProperties(&deviceProp, dev));\n" +
-        "    printf(\"Using Device %d: %s\\n\", dev, deviceProp.name);\n" +
+        "    printf(\"[CUDA]: Using Device %d: %s\\n\", dev, deviceProp.name);\n" +
         "    CHECK(cudaSetDevice(dev));\n" +
         "\n" +
         "    // set up data size of vectors\n" +
         "    int nElem = "+samplesQuantity+";\n" +
-        "    printf(\"Vector Size %d\\n\", nElem);\n" +
+        "    printf(\"[CUDA]: Vector Size %d\\n\", nElem);\n" +
         "\n" +
         "    // malloc host memory\n" +
         "    size_t nBytes = nElem * sizeof(float);\n" +
@@ -67,7 +68,7 @@ public class TestFileGenerator {
         "    CHECK(cudaEventSynchronize(stop));\n" +
         "    // calculate elapsed time\n" +
         "    CHECK(cudaEventElapsedTime( & elapsed_time, start, stop));\n" +
-        "    printf(\"RF with IF - execution time = %.6fms\\n\", elapsed_time);\n" +
+        "    printf(\"[CUDA]: RF with IF - execution time = %.6fms\\n\", elapsed_time);\n" +
         "\n" +
         "    registerTime(elapsed_time);\n" +
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
@@ -77,14 +78,6 @@ public class TestFileGenerator {
         "    for(int i = 0; i < nElem; i++){\n" +
         "        writeOutFile(h_P[i]);\n" +
         "    }\n" +
-        "    // record start event\n" +
-        "    CHECK(cudaEventRecord(start, 0));\n" +
-     //   "    RF_with_EQ << < grid, block >>> (%_VARIABLES_%, d_P, nElem);\n" +
-        "    CHECK(cudaEventRecord(stop, 0));\n" +
-        "    CHECK(cudaEventSynchronize(stop));\n" +
-        "    // calculate elapsed time\n" +
-        "    CHECK(cudaEventElapsedTime( & elapsed_time, start, stop));\n" +
-        "    printf(\"RF with EQ - execution time = %.6fms\\n\", elapsed_time);\n" +
         "\n" +
         "    CHECK(cudaGetLastError());\n" +
         "\n" +
@@ -113,13 +106,13 @@ public class TestFileGenerator {
         );
 
         code = code.replace("%_INICITALIZE_FEATURES_%", 
-        		"printf(\"Start Reading Dataset\\n\");\n"+
+        		"printf(\"[CUDA]: Start Reading Dataset\\n\");\n"+
         		"\tfloat* h["+featureQuantity+"] = {"+
         		IntStream.range(0, featureQuantity)
                 .mapToObj( i -> " h_"+i+"")
                 .collect(Collectors.joining(","))
                 +"};\n\treadInFile(h);\n"+
-                "\tprintf(\"Finished Reading Dataset\\n\");\n"
+                "\tprintf(\"[CUDA]: Finished Reading Dataset\\n\");\n"
         );
 
         code = code.replace("%_DECLARING_GLOBAL_MEMORY_%", 
@@ -162,7 +155,7 @@ public class TestFileGenerator {
         return code;
     }
 
-    private static String generateFunctions(String dataset) {
+    public static String generateFunctions(String dataset) {
         return "#include <sys/time.h>\n" +
         "#define CHECK(call)                                                            \\\n" +
         "{                                                                              \\\n" +
@@ -174,6 +167,7 @@ public class TestFileGenerator {
         "                cudaGetErrorString(error));                                    \\\n" +
         "    }                                                                          \\\n" +
         "}\n" +
+		"#define N_ELEM "+Parser.samplesQuantity+"\r\n" +
         "\n" +
         "\n" +
         "#include <cuda_runtime.h>\n" +
@@ -190,41 +184,41 @@ public class TestFileGenerator {
         "FILE *inFile;\n" +
         "FILE *outFile;\n" +
         "\n" +
-        "void readInFile(float **ip){ \n" +
-        "    char c;\n" +
-        "    int lineCounter = 0, caracterCounter = 0, readIndex = 0;\n"
-        + "\n" +
-        "    char line[100];\n" +
-        "    inFile = fopen(\"../../../assets/datasets/"+dataset+".csv\",\"r\");\n" +
-        "    c = fgetc(inFile);\n" +
-        "    while (c != EOF){\n" +
-        "        if(c == ',' || c == '\\n'){\n" +
-        "            ip[readIndex][lineCounter] = atof(line);        \n" +
-        "            for(int i = 0; i < 100; i++)\n" +
-        "              line[i] = ' ';\n" +
-        "            caracterCounter = 0;\n" +
-        "            readIndex++;\n" +
-        "        }else{\n" +
-        "            line[caracterCounter] = c;\n" +
-        "            caracterCounter++;\n" +
-        "        }\n" +
-        "        \n" +
-        "        if(c == '\\n'){\n" +
-        "            readIndex = 0;\n" +
-        "            lineCounter++;\n" +
-        "        }\n" +
-        "        c = fgetc(inFile);\n" +
-        "    }\n" +
-        "    fclose(inFile);\n" +
-        "}\n" + 
+          "void readInFile(float **ip) {\r\n"
+		+ "    FILE *file = fopen(\"assets/datasets/"+dataset+".csv\",\"r\");\r\n"
+		+ "    if (file == NULL) {\r\n"
+		+ "        printf(\"[CUDA]: Failed to open the file.\\n\");\r\n"
+		+ "        exit(1);\r\n"
+		+ "    }\r\n"
+		+ "\r\n"
+		+ "    char line[1000];\r\n"
+		+ "    \r\n"
+		+ "    int row = 0;\r\n"
+		+ "    fgets(line, sizeof(line), file);\r\n"
+		+ "    while (fgets(line, sizeof(line), file)) {\r\n"
+		+ "        char *token = strtok(line, \",\");\r\n"
+		+ "        \r\n"
+		+ "        int column = 0;\r\n"
+		+ "        while (token != NULL) {\r\n"
+		+ "            ip[column][row] = atof(token);\r\n"
+		+ "            token = strtok(NULL, \",\");\r\n"
+		+ "            column++;\r\n"
+		+ "        }\r\n"
+		+ "\r\n"
+		+ "        row++;\r\n"
+		+ "        if(row > N_ELEM) break;\r\n"
+		+ "    }\r\n"
+		+ "\r\n"
+		+ "    fclose(file);\r\n"
+		+ "}\r\n" +
         "void writeOutFile(int value){\n" + 
         "    outFile = fopen(\"out_rf_with_if.csv\",\"a\");\n" +
         "    fprintf(outFile, \"%d\\n\", value);\n" + 
         "    fclose(outFile);\n" +
         "} \n\n" +
         "void registerTime(float value){\n" + 
-        "    outFile = fopen(\"results.csv\",\"a\");\n" +
-        "    fprintf(outFile, \",%f\", value);\n" + 
+        "    outFile = fopen(\"results/results.csv\",\"a\");\n" +
+        "    fprintf(outFile, \",%.2f\", value);\n" + 
         "    fclose(outFile);\n" +
         "}";
         }

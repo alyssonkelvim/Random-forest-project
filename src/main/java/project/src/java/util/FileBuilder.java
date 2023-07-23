@@ -4,12 +4,24 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class FileBuilder {
 
     public static void execute(String content, String filePath){
         try {
             var path = System.getProperty("user.dir") + "/generated/" + filePath;
+            String directory = path.substring(0, path.lastIndexOf("/"));
+            Path diretorioPath = Paths.get(directory);
+            if (!Files.exists(diretorioPath)) {
+                try {
+                    Files.createDirectory(diretorioPath);
+                } catch (IOException e) {
+                    System.out.println("Failed while creating directory: " + e.getMessage());
+                }
+            } 
             var fileWriter = new FileWriter(path);
             BufferedWriter out = new BufferedWriter(fileWriter);
             out.write(content);
