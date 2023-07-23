@@ -2,6 +2,7 @@
 out
 Random-forest-acelerator.iml
 /target/
+!/target/RandomForest-1.0.jar
 /assets/
 !/assets/datasets/Iris.csv
 /tools/
