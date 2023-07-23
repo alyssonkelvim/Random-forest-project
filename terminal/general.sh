@@ -1,17 +1,17 @@
 #!/bin/bash
-buildJava=true
+buildJava=false
 executeAll=true
 calculateAccuracy=true
 calculateComparissons=true
 approachesToExecute=("TableRestrictGPU")
-trees=(2 3 5 7 10 15 20)
-depths=(2 3 5 7 10 15 20)
-trees=(2)
-depths=(2 5)
+trees=(2 5 15)
+depths=(2 5 15)
 datasets=("SUSY")
 logName="[Bash]: "
 gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
-
+if [ -z "$gpu_name" ]; then
+    gpu_name=$(lspci | grep -i NVIDIA | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
+fi
 
 # Define a função que imprime o quadrado com o texto dentro
 print_square() {
@@ -81,6 +81,9 @@ done
 
 
 echo $logName"GPU Name: $gpu_name"
+
+mkdir -p assets/trees
+mkdir -p assets/datasets
 
 if [ "$buildJava" = true  ]; then
     echo $logName"Building Java Project"
