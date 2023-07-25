@@ -1,5 +1,6 @@
 package project.src.java.approaches.gpu.table;
 
+import project.src.java.Main;
 import project.src.java.dotTreeParser.Parser;
 import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
 import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
@@ -104,7 +105,7 @@ public class TableRestrictGPUGenerator {
 				+ "\r\n"
 				+ "void writeOutFile(int *h, int size)\r\n"
 				+ "{\r\n"
-				+ "    FILE *file = fopen(\"out_rf_table_gpu.csv\", \"w\");\r\n"
+				+ "    FILE *file = fopen(\"out_rf.csv\", \"w\");\r\n"
 				+ "    if (file == NULL) {\r\n"
 				+ "        printf(\"[CUDA]: Failed to open the file.\\n\");\r\n"
 				+ "        return;\r\n"
@@ -380,9 +381,11 @@ public class TableRestrictGPUGenerator {
         "    printf(\"[CUDA]: RF with Table (shared memory) - execution time = %.6fms\\n\", elapsed_time);\n" +
         "\n" +
         "    registerTime(elapsed_time);\n" +
-        "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
-        "    //writeOutFile(h_P, nElem);\n" +
-        "\n" +
+        "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n";
+        if(Main.calculateAccuarcy) {
+        	code += "    writeOutFile(h_P, nElem);\n";
+        }
+        code += "\n" +
         "    CHECK(cudaGetLastError());\n" +
         "\n" +
         "    // copy kernel result back to host side\n" +

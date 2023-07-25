@@ -1,12 +1,12 @@
 #!/bin/bash
-buildJava=false
-executeAll=true
+buildJava=true
+executeAll=false
 calculateAccuracy=true
 calculateComparissons=true
-approachesToExecute=("TableRestrictGPU")
-trees=(2 5 15)
-depths=(2 5 15)
-datasets=("SUSY")
+approachesToExecute=("ConditionalGPU")
+trees=(2 3)
+depths=(2 3)
+datasets=("Iris")
 logName="[Bash]: "
 gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
 if [ -z "$gpu_name" ]; then
@@ -133,8 +133,12 @@ download_dataset "SUSY2" "https://drive.google.com/uc?id=1DJNIc8liQKfIPsKn5M2-US
 if test -e results/results.csv; then
     echo $logName"The results file already exists, appending results."
 else
+    accuracyHeader=""
+    if [ "$calculateAccuracy" = true  ]; then
+        accuracyHeader=",AccuracyRF"
+    fi
     echo $logName"Creating results file"
-    echo "Dataset,Trees,Depth,Accuracy Scikit,GPU,Time,Comparissons,Approach" > results/results.csv
+    echo "Dataset,Trees,Depth,Accuracy Scikit,GPU,Time,Comparissons$accuracyHeader,Approach" > results/results.csv
 fi
 
 for dataset in "${datasets[@]}"
@@ -155,14 +159,18 @@ do
                 echo "------ Conditional GPU"
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
-                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalGPU
+                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalGPU $calculateAccuracy
                 nvcc -o generated/gpu/conditional/rf_with_if generated/gpu/conditional/rf_with_if.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/conditional/rf_with_if
                 if [ "$calculateComparissons" = "true" ]; then
                     echo "------ Conditional GPU Counting Comparissons"
                     jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalCountGPU
                     nvcc -o generated/gpu/conditional/rf_with_if_count generated/gpu/conditional/rf_with_if_count.cu --disable-warnings
-                    nvprof --quiet ./generated/gpu/conditional/rf_with_if_count
+                    nvprof --quiet ./generated/gpu/conditional/rf_with_if_count 
+                fi
+                if [ "$calculateAccuracy" = "true" ]; then
+                    python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv
+                    rm out_rf.csv
                 fi
                 echo -e -n ",Conditional GPU" >> results/results.csv
             fi
@@ -171,7 +179,7 @@ do
                 echo "------ Table GPU with local memory"
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
-                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableGPU
+                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableGPU $calculateAccuracy
                 nvcc -o generated/gpu/table/local/rf_with_table generated/gpu/table/local/rf_with_table.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/table/local/rf_with_table
                 if [ "$calculateComparissons" = "true" ]; then
@@ -180,6 +188,10 @@ do
                     nvcc -o generated/gpu/table/local/rf_with_table_count generated/gpu/table/local/rf_with_table_count.cu --disable-warnings
                     nvprof --quiet ./generated/gpu/table/local/rf_with_table_count
                 fi
+                if [ "$calculateAccuracy" = "true" ]; then
+                    python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv 
+                    rm out_rf.csv
+                fi
                 echo -e -n ",Table GPU with local memory" >> results/results.csv
             fi
 
@@ -187,7 +199,7 @@ do
                 echo "------ Table GPU with constant memory"
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
-                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableConstantGPU
+                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableConstantGPU $calculateAccuracy
                 nvcc -o generated/gpu/table/constant/rf_with_table generated/gpu/table/constant/rf_with_table.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/table/constant/rf_with_table
                 if [ "$calculateComparissons" = "true" ]; then
@@ -196,6 +208,10 @@ do
                     nvcc -o generated/gpu/table/constant/rf_with_table_count generated/gpu/table/constant/rf_with_table_count.cu --disable-warnings
                     nvprof --quiet ./generated/gpu/table/constant/rf_with_table_count
                 fi
+                if [ "$calculateAccuracy" = "true" ]; then
+                    python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv 
+                    rm out_rf.csv
+                fi
                 echo -e -n ",Table GPU with constant memory" >> results/results.csv
             fi
 
@@ -203,7 +219,7 @@ do
                 echo "------ Table GPU with shared memory"
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
-                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableSharedGPU
+                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableSharedGPU $calculateAccuracy
                 nvcc -o generated/gpu/table/shared/rf_with_table generated/gpu/table/shared/rf_with_table.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/table/shared/rf_with_table
                 if [ "$calculateComparissons" = "true" ]; then
@@ -212,6 +228,10 @@ do
                     nvcc -o generated/gpu/table/shared/rf_with_table_count generated/gpu/table/shared/rf_with_table_count.cu --disable-warnings
                     nvprof --quiet ./generated/gpu/table/shared/rf_with_table_count
                 fi
+                if [ "$calculateAccuracy" = "true" ]; then
+                    python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv 
+                    rm out_rf.csv
+                fi
                 echo -e -n ",Table GPU with shared memory" >> results/results.csv
             fi
 
@@ -219,7 +239,7 @@ do
                 echo "------ Table GPU with restrict memory"
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
-                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableRestrictGPU
+                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableRestrictGPU $calculateAccuracy
                 nvcc -o generated/gpu/table/restrict/rf_with_table generated/gpu/table/restrict/rf_with_table.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/table/restrict/rf_with_table
                 if [ "$calculateComparissons" = "true" ]; then
@@ -227,6 +247,10 @@ do
                     jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset TableRestrictCountGPU
                     nvcc -o generated/gpu/table/restrict/rf_with_table_count generated/gpu/table/restrict/rf_with_table_count.cu --disable-warnings
                     nvprof --quiet ./generated/gpu/table/restrict/rf_with_table_count
+                fi
+                if [ "$calculateAccuracy" = "true" ]; then
+                    python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv 
+                    rm out_rf.csv
                 fi
                 echo -e -n ",Table GPU with restrict memory" >> results/results.csv
             fi

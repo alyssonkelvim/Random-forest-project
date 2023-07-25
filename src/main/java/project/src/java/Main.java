@@ -25,6 +25,7 @@ public class Main {
 
     private static String dataset;
     private static String path;
+    public static boolean calculateAccuarcy;
 
     public static void main(String[] args) throws IOException {
     	// Criar a instância de ConcatenatingPrintStream
@@ -34,6 +35,9 @@ public class Main {
         
         dataset = args[0];
         String mode = args[1];
+        if(args.length > 2) {
+        	calculateAccuarcy = args[2].equals("true");
+        }
         path = System.getProperty("user.dir");
 
         switch (mode) {

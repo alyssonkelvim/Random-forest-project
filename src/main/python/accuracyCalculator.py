@@ -19,5 +19,5 @@ for linha in dataset:
 accuracy = correto/i
 strAc = str(accuracy)
 resultsFile = open(sys.argv[4], 'a')
-resultsFile.write( "," + strAc + "\n")
+resultsFile.write( "," + strAc )
 print("[Python - Accuracy Calculator]: Final Accuracy: " + strAc)

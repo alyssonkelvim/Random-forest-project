@@ -1,5 +1,6 @@
 package project.src.java.approaches.gpu.table;
 
+import project.src.java.Main;
 import project.src.java.dotTreeParser.Parser;
 import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
 import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
@@ -100,7 +101,7 @@ public class TableGPUGenerator {
 				+ "\r\n"
 				+ "void writeOutFile(int *h, int size)\r\n"
 				+ "{\r\n"
-				+ "    FILE *file = fopen(\"out_rf_table_gpu.csv\", \"w\");\r\n"
+				+ "    FILE *file = fopen(\"out_rf.csv\", \"w\");\r\n"
 				+ "    if (file == NULL) {\r\n"
 				+ "        printf(\"Failed to open the file.\\n\");\r\n"
 				+ "        return;\r\n"
@@ -371,9 +372,11 @@ public class TableGPUGenerator {
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
         "    CHECK(cudaEventCreate( & start));\n" +
         "    CHECK(cudaEventCreate( & stop));\n" +
-        "    cudaDeviceSynchronize();\n" +
-        "    //writeOutFile(h_P, nElem);\n" +
-        "\n" +
+        "    cudaDeviceSynchronize();\n";
+        if(Main.calculateAccuarcy) {
+        	code += "    writeOutFile(h_P, nElem);\n";
+        }
+        code +="\n" +
         "    CHECK(cudaGetLastError());\n" +
         "\n" +
         "    // copy kernel result back to host side\n" +

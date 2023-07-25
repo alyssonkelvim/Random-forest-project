@@ -1,5 +1,6 @@
 package project.src.java.approaches.gpu.conditional;
 
+import project.src.java.Main;
 import project.src.java.dotTreeParser.Parser;
 import project.src.java.dotTreeParser.treeStructure.Tree;
 import project.src.java.util.FileBuilder;
@@ -74,12 +75,14 @@ public class TestFileGenerator {
         "    registerTime(elapsed_time);\n" +
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
         "    CHECK(cudaEventCreate( & start));\n" +
-        "    CHECK(cudaEventCreate( & stop));\n" +
-        "    for(int i = 0; i < nElem; i++){\n" +
-        "        //writeOutFile(h_P[i]);\n" +
-        "    }\n" +
-        "\n" +
-        "    CHECK(cudaGetLastError());\n" +
+        "    CHECK(cudaEventCreate( & stop));\n";
+        if(Main.calculateAccuarcy) {
+	        code += "    for(int i = 0; i < nElem; i++){\n" +
+	        "        writeOutFile(h_P[i]);\n" +
+	        "    }\n" +
+	        "\n";
+        }
+        code += "    CHECK(cudaGetLastError());\n" +
         "\n" +
         "    // copy kernel result back to host side\n" +
         "    CHECK(cudaMemcpy(h_P, d_P, nBytes, cudaMemcpyDeviceToHost));\n" +
@@ -212,7 +215,7 @@ public class TestFileGenerator {
 		+ "    fclose(file);\r\n"
 		+ "}\r\n" +
         "void writeOutFile(int value){\n" + 
-        "    outFile = fopen(\"out_rf_with_if.csv\",\"a\");\n" +
+        "    outFile = fopen(\"out_rf.csv\",\"a\");\n" +
         "    fprintf(outFile, \"%d\\n\", value);\n" + 
         "    fclose(outFile);\n" +
         "} \n\n" +
