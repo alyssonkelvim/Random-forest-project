@@ -1,12 +1,12 @@
 #!/bin/bash
-buildJava=true
+buildJava=false
 executeAll=false
 calculateAccuracy=true
 calculateComparissons=true
 approachesToExecute=("ConditionalGPU")
-trees=(2 3)
-depths=(2 3)
-datasets=("Iris")
+trees=(2)
+depths=(2)
+datasets=("SUSY")
 logName="[Bash]: "
 gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
 if [ -z "$gpu_name" ]; then
@@ -127,7 +127,7 @@ if ! which nvcc >/dev/null 2>&1; then
     echo $logName"Installing NVCC"
     sudo apt install nvidia-cuda-toolkit
 fi
-download_dataset "SUSY" "https://drive.google.com/uc?id=1vsp4gpJy0QfLnDEsXdPO4WrxU-YBa_l5"
+download_dataset "SUSY" "https://drive.google.com/uc?id=1gD6__sPpYoq_BbGXmzMZjfVAQFoIG1b1"
 download_dataset "SUSY2" "https://drive.google.com/uc?id=1DJNIc8liQKfIPsKn5M2-USoj45wHKvAv"
 
 if test -e results/results.csv; then
@@ -160,7 +160,7 @@ do
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
                 jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalGPU $calculateAccuracy
-                nvcc -o generated/gpu/conditional/rf_with_if generated/gpu/conditional/rf_with_if.cu --disable-warnings
+                nvcc -ptx -o generated/gpu/conditional/rf_with_if generated/gpu/conditional/rf_with_if.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/conditional/rf_with_if
                 if [ "$calculateComparissons" = "true" ]; then
                     echo "------ Conditional GPU Counting Comparissons"
@@ -170,7 +170,7 @@ do
                 fi
                 if [ "$calculateAccuracy" = "true" ]; then
                     python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv
-                    rm out_rf.csv
+                    #rm out_rf.csv
                 fi
                 echo -e -n ",Conditional GPU" >> results/results.csv
             fi
