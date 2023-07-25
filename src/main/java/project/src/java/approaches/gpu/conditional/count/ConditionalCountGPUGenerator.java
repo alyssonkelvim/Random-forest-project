@@ -68,8 +68,8 @@ public class ConditionalCountGPUGenerator {
 
     private static String decodeToIf(Comparisson comparisson) {
         return "F" + comparisson.getColumn() + "[i]" 
-            + comparisson.getComparissonType() + " " 
-            + comparisson.getThreshold();
+            + comparisson.getComparissonType() + " (" 
+            + comparisson.getThreshold()+"+ offset)";
     }
 
    
@@ -89,7 +89,7 @@ public class ConditionalCountGPUGenerator {
         String features = IntStream.range(0, featureQuantity)
             .mapToObj( i -> "float *F"+i)
             .collect(Collectors.joining(", "));
-        String code = "__global__ void RF_with_IF("+features+", int *P, const int N)\n{";
+        String code = "__global__ void RF_with_IF("+features+", int *P, const int N, int offset)\n{";
         return code;
     }
 

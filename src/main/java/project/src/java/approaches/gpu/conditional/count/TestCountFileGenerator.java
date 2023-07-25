@@ -63,7 +63,7 @@ public class TestCountFileGenerator {
         "    CHECK(cudaEventCreate( & stop));\n" +
         "    // record start event\n" +
         "    CHECK(cudaEventRecord(start, 0));\n" +
-        "    RF_with_IF << < grid, block >>> (%_VARIABLES_%, d_P, nElem);\n" +
+        "    RF_with_IF << < grid, block >>> (%_VARIABLES_%, d_P, nElem, 0);\n" +
         "    CHECK(cudaEventRecord(stop, 0));\n" +
         "    CHECK(cudaEventSynchronize(stop));\n" +
         "    // calculate elapsed time\n" +

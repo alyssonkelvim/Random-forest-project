@@ -9,7 +9,7 @@
                 cudaGetErrorString(error));                                    \
     }                                                                          \
 }
-#define N_ELEM 4999999
+#define N_ELEM 4999998
 
 
 #include <cuda_runtime.h>
@@ -63,34 +63,34 @@ void registerTime(int value){
     outFile = fopen("results/results.csv","a");
     fprintf(outFile, ",%d", value);
     fclose(outFile);
-}__global__ void RF_with_IF(float *F0, float *F1, float *F2, float *F3, float *F4, float *F5, float *F6, float *F7, float *F8, float *F9, float *F10, float *F11, float *F12, float *F13, float *F14, float *F15, float *F16, float *F17, float *F18, int *P, const int N)
+}__global__ void RF_with_IF(float *F0, float *F1, float *F2, float *F3, float *F4, float *F5, float *F6, float *F7, float *F8, float *F9, float *F10, float *F11, float *F12, float *F13, float *F14, float *F15, float *F16, float *F17, float *F18, int *P, const int N, int offset)
 {	int i = blockIdx.x * blockDim.x + threadIdx.x;
 	int Class[2]; 
 	Class[0] = 0;
 	Class[1] = 0;
 	if (i < N) {
-		if (F16[i]<= 1.734) {
-		atomicAdd(&counter, 1);			if (F7[i]<= 1.192) {
+		if (F16[i]<= (1.734+ offset)) {
+		atomicAdd(&counter, 1);			if (F1[i]<= (0.921+ offset)) {
 			atomicAdd(&counter, 1);				Class[1]++;
 			} else {
 			atomicAdd(&counter, 1);				Class[0]++;
 			}
 		} else {
-		atomicAdd(&counter, 1);			if (F10[i]<= -0.27) {
+		atomicAdd(&counter, 1);			if (F16[i]<= (2.079+ offset)) {
 			atomicAdd(&counter, 1);				Class[0]++;
 			} else {
 			atomicAdd(&counter, 1);				Class[0]++;
 			}
 		}
 
-		if (F7[i]<= 1.218) {
-		atomicAdd(&counter, 1);			if (F15[i]<= 0.723) {
+		if (F16[i]<= (1.713+ offset)) {
+		atomicAdd(&counter, 1);			if (F7[i]<= (1.191+ offset)) {
 			atomicAdd(&counter, 1);				Class[1]++;
 			} else {
-			atomicAdd(&counter, 1);				Class[1]++;
+			atomicAdd(&counter, 1);				Class[0]++;
 			}
 		} else {
-		atomicAdd(&counter, 1);			if (F7[i]<= 1.571) {
+		atomicAdd(&counter, 1);			if (F16[i]<= (2.049+ offset)) {
 			atomicAdd(&counter, 1);				Class[0]++;
 			} else {
 			atomicAdd(&counter, 1);				Class[0]++;
@@ -111,7 +111,7 @@ void registerTime(int value){
     CHECK(cudaSetDevice(dev));
 
     // set up data size of vectors
-    int nElem = 4999999;
+    int nElem = 4999998;
     printf("[CUDA]: Vector Size %d\n", nElem);
 
     // malloc host memory
@@ -205,7 +205,7 @@ void registerTime(int value){
     CHECK(cudaEventCreate( & stop));
     // record start event
     CHECK(cudaEventRecord(start, 0));
-    RF_with_IF << < grid, block >>> (d_0, d_1, d_2, d_3, d_4, d_5, d_6, d_7, d_8, d_9, d_10, d_11, d_12, d_13, d_14, d_15, d_16, d_17, d_18, d_P, nElem);
+    RF_with_IF << < grid, block >>> (d_0, d_1, d_2, d_3, d_4, d_5, d_6, d_7, d_8, d_9, d_10, d_11, d_12, d_13, d_14, d_15, d_16, d_17, d_18, d_P, nElem, 0);
     CHECK(cudaEventRecord(stop, 0));
     CHECK(cudaEventSynchronize(stop));
     // calculate elapsed time

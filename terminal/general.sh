@@ -1,5 +1,5 @@
 #!/bin/bash
-buildJava=false
+buildJava=true
 executeAll=false
 calculateAccuracy=true
 calculateComparissons=true
@@ -127,6 +127,10 @@ if ! which nvcc >/dev/null 2>&1; then
     echo $logName"Installing NVCC"
     sudo apt install nvidia-cuda-toolkit
 fi
+
+if ! dpkg -s pciutils &> /dev/null; then
+    sudo apt install pciutils
+fi
 download_dataset "SUSY" "https://drive.google.com/uc?id=1gD6__sPpYoq_BbGXmzMZjfVAQFoIG1b1"
 download_dataset "SUSY2" "https://drive.google.com/uc?id=1DJNIc8liQKfIPsKn5M2-USoj45wHKvAv"
 
@@ -160,7 +164,7 @@ do
                 echo -e -n "\n"$trainingResults >> results/results.csv
                 echo $logName"Executing with $tree trees and $depth of depth"
                 jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalGPU $calculateAccuracy
-                nvcc -ptx -o generated/gpu/conditional/rf_with_if generated/gpu/conditional/rf_with_if.cu --disable-warnings
+                nvcc -o generated/gpu/conditional/rf_with_if generated/gpu/conditional/rf_with_if.cu --disable-warnings
                 nvprof --quiet ./generated/gpu/conditional/rf_with_if
                 if [ "$calculateComparissons" = "true" ]; then
                     echo "------ Conditional GPU Counting Comparissons"
