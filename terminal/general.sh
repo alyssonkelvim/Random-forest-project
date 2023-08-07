@@ -8,10 +8,7 @@ trees=(3 6 9 12 15)
 depths=(3 6 9 12 15)
 datasets=("Hospital" "Adult" "SUSY")
 logName="[Bash]: "
-gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
-if [ -z "$gpu_name" ]; then
-    gpu_name=$(lspci | grep -i NVIDIA | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
-fi
+
 
 # Define a função que imprime o quadrado com o texto dentro
 print_square() {
@@ -79,7 +76,14 @@ while getopts ":qf:" opt; do
     esac
 done
 
-
+if ![dpkg -l | grep -q pciutils]; then
+    echo $logName"Installing pciutils"
+    sudo apt-get install pciutils
+fi
+gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
+if [ -z "$gpu_name" ]; then
+    gpu_name=$(lspci | grep -i NVIDIA | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
+fi
 echo $logName"GPU Name: $gpu_name"
 
 mkdir -p assets/trees
