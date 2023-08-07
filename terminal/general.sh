@@ -1,5 +1,5 @@
 #!/bin/bash
-buildJava=false
+buildJava=true
 executeAll=false
 calculateAccuracy=false
 calculateComparissons=false
@@ -181,7 +181,7 @@ do
                 echo $logName"Executing with $tree trees and $depth of depth"
                 jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset CalcGPU $calculateAccuracy
                 nvcc -o generated/gpu/calc/rf_with_calc generated/gpu/calc/rf_with_calc.cu --disable-warnings
-                nvprof --quiet ./generated/gpu/calc/rf_with_calc
+                ./generated/gpu/calc/rf_with_calc
                 if [ "$calculateAccuracy" = "true" ]; then
                     python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv
                     rm out_rf.csv
@@ -195,7 +195,7 @@ do
                 echo $logName"Executing with $tree trees and $depth of depth"
                 jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalGPU $calculateAccuracy
                 nvcc -o generated/gpu/conditional/rf_with_if generated/gpu/conditional/rf_with_if.cu --disable-warnings
-                nvprof --quiet ./generated/gpu/conditional/rf_with_if
+                ./generated/gpu/conditional/rf_with_if
                 if [ "$calculateComparissons" = "true" ]; then
                     echo "------ Conditional GPU Counting Comparissons"
                     jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset ConditionalCountGPU

@@ -224,7 +224,7 @@ public class CalcTestFileGenerator {
         "} \n\n" +
         "void registerTime(float value){\n" + 
         "    outFile = fopen(\"results/results.csv\",\"a\");\n" +
-        "    fprintf(outFile, \",%.2f\", value);\n" + 
+        "    fprintf(outFile, \",%.4f\", value);\n" + 
         "    fclose(outFile);\n" +
         "}";
         }
