@@ -44,7 +44,9 @@ public class CalcGPUGenerator {
     }
     
     private static String generateCalcTrees(List<Tree> trees) {
-    	var code = IntStream.range(0, Parser.classesNames.size())
+        var code = "\tint Class["+Parser.classesNames.size()+"]; " + "\n";
+
+    	code += IntStream.range(0, Parser.classesNames.size())
                 .mapToObj(i -> "\tClass["+i+"] = 0;")
                 .collect(Collectors.joining("\n"));
     	code += "\n\tif (i < N) {\n";
@@ -58,7 +60,7 @@ public class CalcGPUGenerator {
     }
 
     private static String generateCalcTree(Tree tree, int treeNumber) {
-    	String code = "\n\t\t__shared__ int classesTree"+treeNumber + "[] = {%_CLASSES_%};\n";
+    	String code = "\n\t\tint classesTree"+treeNumber + "[] = {%_CLASSES_%};\n";
 
     	var outerNodes = outerNodesLists.get(treeNumber);
     	var classes = outerNodes.stream().map(n -> n.getClassNumber()+"").collect(Collectors.joining(","));
@@ -82,9 +84,9 @@ public class CalcGPUGenerator {
     		var n3 = o3.getFather();
     		var n1 = n2.getFather();
     		
-    		code += "\n\t\tint r"+t+" = (F"+n1.getComparisson().getColumn()+"[i] "+n1.getComparisson().getComparissonType()+" ("+n1.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
-    		code += "\n\t\tint "+t+" = r"+t+" * (2 + F"+n3.getComparisson().getColumn()+"[i] "+n3.getComparisson().getComparissonType()+" ("+n3.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
-    		code += "\n\t\t"+t+" += (1 - r"+t+") * ( F"+n2.getComparisson().getColumn()+"[i] "+n2.getComparisson().getComparissonType()+" ("+n2.getComparisson().getThreshold()+" + offset"+treeNumber+"));\n\n";
+    		code += "\n\t\tint r"+t+" = (F"+n1.getComparisson().getColumn()+"[i] > ("+n1.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
+    		code += "\n\t\tint "+t+" = r"+t+" * (2 + (F"+n3.getComparisson().getColumn()+"[i] > ("+n3.getComparisson().getThreshold()+" + offset"+treeNumber+")));";
+    		code += "\n\t\t"+t+" += (1 - r"+t+") * ( F"+n2.getComparisson().getColumn()+"[i] > ("+n2.getComparisson().getThreshold()+" + offset"+treeNumber+"));\n\n";
     		if(!queue.contains(n1.getFather()))
     			queue.add(n1.getFather());
     		n++;
@@ -104,8 +106,8 @@ public class CalcGPUGenerator {
     		t = "t"+treeNumber+"_"+levelNumber+"_"+n;
     		var ref1 = "t"+treeNumber+"_"+(levelNumber-1)+"_"+(n*2+1);
     		var ref2 = "t"+treeNumber+"_"+(levelNumber-1)+"_"+(n*2);
-    		var index = 4*(levelNumber+1);
-    		code += "\n\t\tint r"+t+" = (F"+ni.getComparisson().getColumn()+"[i] "+ni.getComparisson().getComparissonType()+" ("+ni.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
+    		var index = 4*(levelNumber);
+    		code += "\n\t\tint r"+t+" = (F"+ni.getComparisson().getColumn()+"[i] > ("+ni.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
     		code += "\n\t\tint "+t+" = r"+t+" * ("+index+" + "+ref1+");";
     		code += "\n\t\t"+t+" += (1 - r"+t+") * "+ref2+";";
     		code += "\n\n";
@@ -166,10 +168,13 @@ public class CalcGPUGenerator {
     }
 
     private static String generateFunctionSignature(int treeQuantity) {
-        String features = IntStream.range(0, treeQuantity)
-            .mapToObj( i -> "const int offset"+i)
-            .collect(Collectors.joining(", "));
-        String code = "__global__ void RF_kernel("+features+", const int n, const int offset0, const int offset1, const int offset2, float *vR)\n{";
+    	String features = IntStream.range(0, Parser.featuresNames.size())
+                .mapToObj( i -> "float *F"+i)
+                .collect(Collectors.joining(", "));
+        String offsets = IntStream.range(0, treeQuantity)
+                .mapToObj( i -> "const int offset"+i)
+                .collect(Collectors.joining(", "));
+        String code = "__global__ void RF_kernel("+features+", const int N, "+offsets+", int *vR)\n{";
         return code;
     }
 

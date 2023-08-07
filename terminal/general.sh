@@ -1,12 +1,14 @@
 #!/bin/bash
-buildJava=true
+buildJava=false
 executeAll=false
 calculateAccuracy=true
 calculateComparissons=true
-approachesToExecute=("ConditionalGPU")
-trees=(2)
-depths=(2)
-datasets=("Iris")
+approachesToExecute=("CalcGPU" "ConditionalGPU")
+trees=(3 6 9 12 15)
+depths=(3 6 9 12 15)
+trees=(3 6)
+depths=(3 6)
+datasets=("Hospital" "Adult")
 logName="[Bash]: "
 gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
 if [ -z "$gpu_name" ]; then
@@ -132,7 +134,9 @@ if ! dpkg -s pciutils &> /dev/null; then
     sudo apt install pciutils
 fi
 download_dataset "SUSY" "https://drive.google.com/uc?id=1gD6__sPpYoq_BbGXmzMZjfVAQFoIG1b1"
-download_dataset "SUSY2" "https://drive.google.com/uc?id=1DJNIc8liQKfIPsKn5M2-USoj45wHKvAv"
+#download_dataset "SUSY2" "https://drive.google.com/uc?id=1DJNIc8liQKfIPsKn5M2-USoj45wHKvAv"
+download_dataset "Hospital" "https://drive.google.com/uc?id=1cYT9E47HCsiRp7GLhN39AfkX-MHJxTsh"
+download_dataset "Adult" "https://drive.google.com/uc?id=1JqVFYF6vGONm3cbnxDFUBqwozioIEQrk"
 
 if test -e results/results.csv; then
     echo $logName"The results file already exists, appending results."
@@ -159,6 +163,20 @@ do
             trainingResults=$(tail -n 1 "results/results.csv")
             sed -i '$ d' "results/results.csv"
             
+            if [ "$executeAll" = "true" ] || approaches_contains_element "CalcGPU" "${approachesToExecute[@]}"; then
+                echo "------ Calculated GPU"
+                echo -e -n "\n"$trainingResults >> results/results.csv
+                echo $logName"Executing with $tree trees and $depth of depth"
+                jdk-20.0.2/bin/java -jar target/RandomForest-1.0.jar $dataset CalcGPU $calculateAccuracy
+                nvcc -o generated/gpu/calc/rf_with_calc generated/gpu/calc/rf_with_calc.cu --disable-warnings
+                nvprof --quiet ./generated/gpu/calc/rf_with_calc
+                if [ "$calculateAccuracy" = "true" ]; then
+                    python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv
+                    rm out_rf.csv
+                fi
+                echo -e -n ",Calculated GPU" >> results/results.csv
+            fi
+
             if [ "$executeAll" = "true" ] || approaches_contains_element "ConditionalGPU" "${approachesToExecute[@]}"; then
                 echo "------ Conditional GPU"
                 echo -e -n "\n"$trainingResults >> results/results.csv
@@ -174,7 +192,7 @@ do
                 fi
                 if [ "$calculateAccuracy" = "true" ]; then
                     python3 src/main/python/accuracyCalculator.py "$dataset" "assets/datasets/" "out_rf.csv" results/results.csv
-                    #rm out_rf.csv
+                    rm out_rf.csv
                 fi
                 echo -e -n ",Conditional GPU" >> results/results.csv
             fi
