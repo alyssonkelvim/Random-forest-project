@@ -6,7 +6,7 @@ calculateComparissons=true
 approachesToExecute=("CalcGPU" "ConditionalGPU")
 trees=(3 6 9 12 15)
 depths=(3 6 9 12 15)
-datasets=("Hospital" "Adult")
+datasets=("Hospital" "Adult" "SUSY")
 logName="[Bash]: "
 gpu_name=$(lspci | grep -i vga | grep -oP '\[.*?\]' | sed 's/\[\|\]//g')
 if [ -z "$gpu_name" ]; then
