@@ -76,7 +76,7 @@ while getopts ":qf:" opt; do
     esac
 done
 
-if ![dpkg -l | grep -q pciutils]; then
+if ! dpkg -l | grep -q pciutils; then
     echo $logName"Installing pciutils"
     sudo apt-get install pciutils
 fi
