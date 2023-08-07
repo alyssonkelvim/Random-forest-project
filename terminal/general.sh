@@ -135,6 +135,16 @@ fi
 if ! dpkg -s pciutils &> /dev/null; then
     sudo apt install pciutils
 fi
+
+#!/bin/bash
+
+directory="results"
+
+if [ ! -d "$directory" ]; then
+    mkdir "$directory"
+    echo $logName"Creating results directory"
+fi
+
 download_dataset "SUSY" "https://drive.google.com/uc?id=1gD6__sPpYoq_BbGXmzMZjfVAQFoIG1b1"
 #download_dataset "SUSY2" "https://drive.google.com/uc?id=1DJNIc8liQKfIPsKn5M2-USoj45wHKvAv"
 download_dataset "Hospital" "https://drive.google.com/uc?id=1cYT9E47HCsiRp7GLhN39AfkX-MHJxTsh"
