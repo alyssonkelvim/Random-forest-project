@@ -6,6 +6,7 @@ import java.util.List;
 import project.src.java.approaches.cpu.conditional.ConditionalCPUGenerator;
 import project.src.java.approaches.cpu.table.TableCPUGenerator;
 import project.src.java.approaches.fpga.FPGA;
+import project.src.java.approaches.gpu.calc.CalcGPUGenerator;
 import project.src.java.approaches.gpu.conditional.ConditionalGPUGenerator;
 import project.src.java.approaches.gpu.conditional.count.ConditionalCountGPUGenerator;
 import project.src.java.approaches.gpu.table.TableConstantGPUGenerator;
@@ -54,11 +55,13 @@ public class Main {
             case "TableRestrictGPU": startTableRestrictGPUGenerator(); break;
             case "TableRestrictCountGPU": startTableRestrictCountGPUGenerator(); break;
             case "ConditionalFPGA": startConditionalFPGAGenerator(); break;
+            case "CalcGPU": startCalcGPUGenerator(); break;
             default: throw new IllegalArgumentException("Unexpected value for mode: " + mode);
         }
     }
 
-    public static void startConditionalFPGAGenerator() throws IOException{
+
+	public static void startConditionalFPGAGenerator() throws IOException{
         PythonScriptCaller caller = new PythonScriptCaller();
         caller.execute(path, dataset);
         List<Tree> trees = Parser.execute(dataset);
@@ -66,6 +69,11 @@ public class Main {
         FPGAGenerator.execute();
         System.out.println("job finished: Success");
     }
+	
+	public static void startCalcGPUGenerator() throws IOException {
+		var trees = Parser.execute(dataset);
+        CalcGPUGenerator.execute(trees, dataset);
+	}
 
     public static void startConditionalGPUGenerator() throws IOException{
         var trees = Parser.execute(dataset);

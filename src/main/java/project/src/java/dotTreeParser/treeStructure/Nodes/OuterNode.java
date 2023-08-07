@@ -6,7 +6,22 @@ public class OuterNode extends Node {
 
     private String className;
     private Integer classNumber;
+    private Integer index;
 
+  
+
+	public OuterNode clone() {
+    	var node = new OuterNode();
+    	node.setClassName(className);
+    	node.setClassNumber(classNumber);
+    	ArrayList<Integer> clonedList = new ArrayList<>();
+        for (Integer element : values) {
+            clonedList.add(element);
+        }
+    	node.setValues(clonedList);
+    	return node;
+    }
+    
     public OuterNode(ArrayList<Integer> values){
         this.values = values;
     }
@@ -30,5 +45,12 @@ public class OuterNode extends Node {
         this.classNumber = classNumber;
     }
 
+    public Integer getIndex() {
+  		return index;
+  	}
+
+  	public void setIndex(Integer index) {
+  		this.index = index;
+  	}
     
 }

@@ -1,11 +1,13 @@
 package project.src.java.dotTreeParser.treeStructure;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
 import project.src.java.dotTreeParser.treeStructure.Nodes.InnerNode;
 import project.src.java.dotTreeParser.treeStructure.Nodes.Node;
 import project.src.java.dotTreeParser.treeStructure.Nodes.OuterNode;
-
-import java.util.HashMap;
-import java.util.Objects;
 
 
 public class Tree {
@@ -40,6 +42,7 @@ public class Tree {
         } else {
             father.setRightNode(son);
         }
+        son.setFather(father);
     }
 
     public Node getRoot() {
@@ -59,4 +62,10 @@ public class Tree {
         return outerNodes.values().stream().findFirst().get().getValues().size();
     }
   
+    public List<OuterNode> getOuterNodes(){
+    	return this.outerNodes.values()
+    			.stream()
+    			.sorted((a,b)->a.getIndex().compareTo(b.getIndex()))
+    			.collect(Collectors.toList());
+    }
 }

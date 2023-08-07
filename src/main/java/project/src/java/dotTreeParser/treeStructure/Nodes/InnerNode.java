@@ -7,8 +7,10 @@ public class InnerNode extends Node {
     private Comparisson comparisson;
     private Node leftNode;
     private Node rightNode;
-
-    public InnerNode(Comparisson comparisson, ArrayList<Integer> values){
+    private boolean dummy;
+    
+    
+	public InnerNode(Comparisson comparisson, ArrayList<Integer> values){
         this.comparisson = comparisson;
         this.values = values;
 
@@ -17,6 +19,23 @@ public class InnerNode extends Node {
     }
 
     public InnerNode() {
+    }
+    
+    public InnerNode cloneDummy() {
+    	var dummy = new InnerNode();
+    	var comparisson = new Comparisson();
+    	comparisson.setColumn(this.getComparisson().getColumn());
+    	comparisson.setComparissonType(this.getComparisson().getComparissonType());
+    	comparisson.setFeatureName(this.getComparisson().getFeatureName());
+    	comparisson.setThreshold(this.getComparisson().getThreshold());
+    	ArrayList<Integer> clonedList = new ArrayList<>();
+        for (Integer element : values) {
+            clonedList.add(element);
+        }
+    	dummy.setComparisson(comparisson);
+    	dummy.setValues(clonedList);
+    	dummy.setDummy(true);
+    	return dummy;
     }
 
     public boolean leftIsNull(){
@@ -50,6 +69,14 @@ public class InnerNode extends Node {
     public void setRightNode(Node rightNode) {
         this.rightNode = rightNode;
     }
+
+	public boolean isDummy() {
+		return dummy;
+	}
+
+	public void setDummy(boolean dummy) {
+		this.dummy = dummy;
+	}
 
     
 

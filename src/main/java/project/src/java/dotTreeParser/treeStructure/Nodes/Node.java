@@ -5,10 +5,27 @@ import java.util.ArrayList;
 public abstract class Node {
     protected Integer id;
     protected ArrayList<Integer> values;
-
+    protected Node father;
+    protected Integer level;
   
 
-    @Override
+    public Integer getLevel() {
+		return level;
+	}
+
+	public void setLevel(Integer level) {
+		this.level = level;
+	}
+
+	public InnerNode getFather() {
+		return (InnerNode)father;
+	}
+
+	public void setFather(InnerNode father) {
+		this.father = father;
+	}
+
+	@Override
     public String toString() {
         return "Node [id=" + id + ", values=" + values + "]";
     }
