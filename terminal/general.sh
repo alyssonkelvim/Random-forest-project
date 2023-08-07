@@ -2,7 +2,7 @@
 buildJava=false
 executeAll=false
 calculateAccuracy=true
-calculateComparissons=true
+calculateComparissons=false
 approachesToExecute=("CalcGPU" "ConditionalGPU")
 trees=(3 6 9 12 15)
 depths=(3 6 9 12 15)
