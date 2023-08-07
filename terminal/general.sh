@@ -101,6 +101,7 @@ fi
 
 if ! pip show scikit-learn >/dev/null 2>&1; then
     echo $logName"Intalling Scikit-Learn"
+    pip install -U scikit-learn
 fi
 
 if ! pip show numpy >/dev/null 2>&1; then
