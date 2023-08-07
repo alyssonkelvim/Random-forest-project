@@ -44,27 +44,35 @@ public class CalcGPUGenerator {
     }
     
     private static String generateCalcTrees(List<Tree> trees) {
-        var code = "\tint Class["+Parser.classesNames.size()+"]; " + "\n";
-
-    	code += IntStream.range(0, Parser.classesNames.size())
-                .mapToObj(i -> "\tClass["+i+"] = 0;")
-                .collect(Collectors.joining("\n"));
+    	String code = "\n\tint c0 = 0, c1 = 0;\n\tint bitValue;\n";
+    	for (int i = 0; i < trees.size(); i++) {
+    		var outerNodes = outerNodesLists.get(i);
+    		var enableLong = "";
+    		if(outerNodes.size() > 32) {
+    			enableLong = "long ";
+    		}
+    		code += "\n\t"+enableLong+"int classesTree"+i + "= 0b%_CLASSES_%;\n";
+        	var classes = outerNodes.stream().map(n -> n.getClassNumber()+"").collect(Collectors.joining(""));
+        	StringBuilder reversed = new StringBuilder(classes);
+        	reversed.reverse();
+        	code = code.replaceAll("%_CLASSES_%", reversed.toString());
+		}
+    	
     	code += "\n\tif (i < N) {\n";
     	
     	for (int i = 0; i < trees.size(); i++) {
     		code += generateCalcTree(trees.get(i), i);
 		}
-    	code += generateComparissons(Parser.classesNames.size());
-        code += "\n\t}\n}";
+    	code += "\t\tvR[i] = c0 > c1? 0:1;\n";
+        code += "\n\t}\n}\n\n";
+       
     	return code;
     }
 
     private static String generateCalcTree(Tree tree, int treeNumber) {
-    	String code = "\n\t\tint classesTree"+treeNumber + "[] = {%_CLASSES_%};\n";
-
+    	String code = "";
+    	String t ="";
     	var outerNodes = outerNodesLists.get(treeNumber);
-    	var classes = outerNodes.stream().map(n -> n.getClassNumber()+"").collect(Collectors.joining(","));
-    	code = code.replaceAll("%_CLASSES_%", classes);
     	var levelNumber = 0;
     	var n = 0;
         Queue<InnerNode> queue = new LinkedList<>();
@@ -77,46 +85,49 @@ public class CalcGPUGenerator {
     		 *        /  \  /  \
     		 *       o1  o2 o3  o4
     		 */
-    		var t = "t"+treeNumber+"_"+levelNumber+"_"+n;
+    		t = "t"+treeNumber+"_"+levelNumber+"_"+n;
     		var o1 = outerNodes.get(i);
     		var o3 = outerNodes.get(i+2);
     		var n2 = o1.getFather();
     		var n3 = o3.getFather();
     		var n1 = n2.getFather();
     		
-    		code += "\n\t\tint r"+t+" = (F"+n1.getComparisson().getColumn()+"[i] > ("+n1.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
-    		code += "\n\t\tint "+t+" = r"+t+" * (2 + (F"+n3.getComparisson().getColumn()+"[i] > ("+n3.getComparisson().getThreshold()+" + offset"+treeNumber+")));";
-    		code += "\n\t\t"+t+" += (1 - r"+t+") * ( F"+n2.getComparisson().getColumn()+"[i] > ("+n2.getComparisson().getThreshold()+" + offset"+treeNumber+"));\n\n";
+    		code += "\n\t\tint r"+t+" = (F"+n1.getComparisson().getColumn()+"[i] > ("+n1.getComparisson().getThreshold()+"));";
+    		code += "\n\t\tint "+t+" = r"+t+" * (2 + (F"+n3.getComparisson().getColumn()+"[i] > ("+n3.getComparisson().getThreshold()+")));";
+    		code += "\n\t\t"+t+" += (1 - r"+t+") * ( F"+n2.getComparisson().getColumn()+"[i] > ("+n2.getComparisson().getThreshold()+"));\n\n";
     		if(!queue.contains(n1.getFather()))
     			queue.add(n1.getFather());
     		n++;
     	}
     	
-    	levelNumber = 1;
-    	int nodeLevel = queue.peek().getLevel();
-    	n = 0;
-    	String t ="";
-    	while(!queue.isEmpty()) {
-    		var ni = queue.poll();
-    		if(nodeLevel != ni.getLevel()) {
-    			n = 0;
-    			levelNumber++;
-    			nodeLevel = ni.getLevel();
-    		}
-    		t = "t"+treeNumber+"_"+levelNumber+"_"+n;
-    		var ref1 = "t"+treeNumber+"_"+(levelNumber-1)+"_"+(n*2+1);
-    		var ref2 = "t"+treeNumber+"_"+(levelNumber-1)+"_"+(n*2);
-    		var index = 4*(levelNumber);
-    		code += "\n\t\tint r"+t+" = (F"+ni.getComparisson().getColumn()+"[i] > ("+ni.getComparisson().getThreshold()+" + offset"+treeNumber+"));";
-    		code += "\n\t\tint "+t+" = r"+t+" * ("+index+" + "+ref1+");";
-    		code += "\n\t\t"+t+" += (1 - r"+t+") * "+ref2+";";
-    		code += "\n\n";
-    		n++;
-    		if(ni.getFather() != null && !queue.contains(ni.getFather()))
-    			queue.add(ni.getFather());
+    	if(queue.peek() != null) {
+	    	levelNumber = 1;
+	    	int nodeLevel = queue.peek().getLevel();
+	    	n = 0;
+
+	    	while(!queue.isEmpty()) {
+	    		var ni = queue.poll();
+	    		if(nodeLevel != ni.getLevel()) {
+	    			n = 0;
+	    			levelNumber++;
+	    			nodeLevel = ni.getLevel();
+	    		}
+	    		t = "t"+treeNumber+"_"+levelNumber+"_"+n;
+	    		var ref1 = "t"+treeNumber+"_"+(levelNumber-1)+"_"+(n*2+1);
+	    		var ref2 = "t"+treeNumber+"_"+(levelNumber-1)+"_"+(n*2);
+	    		var index = 4*(levelNumber);
+	    		code += "\n\t\tint r"+t+" = (F"+ni.getComparisson().getColumn()+"[i] > ("+ni.getComparisson().getThreshold()+"));";
+	    		code += "\n\t\tint "+t+" = r"+t+" * ("+index+" + "+ref1+");";
+	    		code += "\n\t\t"+t+" += (1 - r"+t+") * "+ref2+";";
+	    		code += "\n\n";
+	    		n++;
+	    		if(ni.getFather() != null && !queue.contains(ni.getFather()))
+	    			queue.add(ni.getFather());
+	    	}
     	}
-    	
-    	code+="\n\t\tClass[classesTree"+treeNumber+"["+t+"]]++;\n\n";
+    	code += "\t\tbitValue = (classesTree"+treeNumber+" >> "+t+") & 1;\n";
+    	code += "\t\tc0 += 1 - bitValue;\n";
+    	code += "\t\tc1 += bitValue;\n";
 
     	return code;
     }

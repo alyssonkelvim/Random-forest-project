@@ -1,11 +1,11 @@
 #!/bin/bash
 buildJava=false
 executeAll=false
-calculateAccuracy=true
+calculateAccuracy=false
 calculateComparissons=false
 approachesToExecute=("CalcGPU" "ConditionalGPU")
-trees=(3 6 9 12 15)
-depths=(3 6 9 12 15)
+trees=(3 4 5 6)
+depths=(2 3 4 5 6)
 datasets=("Hospital" "Adult" "SUSY")
 logName="[Bash]: "
 
