@@ -1,5 +1,5 @@
 #!/bin/bash
-buildJava=true
+buildJava=false
 executeAll=false
 calculateAccuracy=false
 calculateComparissons=false
